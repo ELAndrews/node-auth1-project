@@ -1,8 +1,12 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const Users = require("../models/users");
+const {
+  validateRequestFullBody,
+  validateUsername
+} = require("../middleware/user-middleware");
 
-router.post("/register", (req, res) => {
+router.post("/register", validateRequestFullBody, (req, res) => {
   const { username, password } = req.body;
 
   const bcryptHash = bcrypt.hashSync(password, 12);
@@ -20,7 +24,7 @@ router.post("/register", (req, res) => {
     });
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", validateRequestFullBody, validateUsername, (req, res) => {
   let { username, password } = req.body;
   Users.login({ username })
     .first()
