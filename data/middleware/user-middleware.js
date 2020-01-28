@@ -41,7 +41,7 @@ function userProtectedRoute(req, res, next) {
     next();
   } else {
     res.status(400).json({
-      message: "no cookie, OR cookie without a valid session id in the monkey"
+      message: "no cookie, no access!"
     });
   }
 }
@@ -51,7 +51,7 @@ function adminProtectedRoute(req, res, next) {
     next();
   } else {
     res.status(400).json({
-      message: "no cookie, OR cookie without a valid session id in the monkey"
+      message: "no cookie, no access! Admin Only Area!"
     });
   }
 }
