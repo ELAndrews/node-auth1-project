@@ -1,14 +1,11 @@
 const router = require("express").Router();
 const Users = require("../models/users");
-const {
-  userProtectedRoute,
-  adminProtectedRoute
-} = require("../middleware/user-middleware");
+const { userProtectedRoute } = require("../middleware/user-middleware");
 
-router.get("/users", adminProtectedRoute, (req, res) => {
-  Users.getUsers()
-    .then(users => {
-      res.status(200).json(users);
+router.get("/users/:id", userProtectedRoute, (req, res) => {
+  Users.getUserById(req.params.id)
+    .then(user => {
+      res.status(200).json(user);
     })
     .catch(error => {
       res.status(500).json(error);
