@@ -10,8 +10,8 @@ function getUsers() {
   return db("users");
 }
 
-function login(name) {
-  return db("users").where(name);
+function login({ username }) {
+  return db("users").where({ username });
 }
 
 function register({ username, password }) {

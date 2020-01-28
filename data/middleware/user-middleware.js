@@ -1,5 +1,6 @@
 const express = require("express");
 const Users = require("../models/users");
+const bcrypt = require("bcryptjs");
 
 module.exports = { validateRequestFullBody, validateUsername, protectedRoute };
 
@@ -31,5 +32,22 @@ function validateUsername(req, res, next) {
 }
 
 function protectedRoute(req, res, next) {
-  // THIS REQUIRES COOKIES! I can then refactor the get request.
+  const { username, password } = req.headers;
+
+  if (username && password) {
+    Users.login({ username })
+      .first()
+      .then(user => {
+        if (user && bcrypt.compareSync(password, user.password)) {
+          next();
+        } else {
+          res.status(401).json({ message: "Invalid Credentials" });
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ message: "Ran into an unexpected error" });
+      });
+  } else {
+    res.status(400).json({ message: "No credentials provided" });
+  }
 }

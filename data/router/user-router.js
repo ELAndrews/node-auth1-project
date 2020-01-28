@@ -1,30 +1,14 @@
 const router = require("express").Router();
-const bcrypt = require("bcryptjs");
 const Users = require("../models/users");
-const {
-  validateRequestFullBody,
-  validateUsername
-} = require("../middleware/user-middleware");
+const { protectedRoute } = require("../middleware/user-middleware");
 
-router.get("/users", validateRequestFullBody, validateUsername, (req, res) => {
-  let { username, password } = req.body;
-  Users.login({ username })
-    .first()
-    .then(user => {
-      if (user && bcrypt.compareSync(password, user.password)) {
-        Users.getUsers()
-          .then(users => {
-            res.status(200).json(users);
-          })
-          .catch(error => {
-            console.log(error.message);
-          });
-      } else {
-        res.status(401).json(`You shall not pass!`);
-      }
+router.get("/users", protectedRoute, (req, res) => {
+  Users.getUsers()
+    .then(users => {
+      res.status(200).json(users);
     })
     .catch(error => {
-      console.log(error.message);
+      res.status(500).json(error);
     });
 });
 

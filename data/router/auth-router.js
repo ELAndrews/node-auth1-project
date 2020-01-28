@@ -20,12 +20,12 @@ router.post("/register", validateRequestFullBody, (req, res) => {
       res.status(201).json(`New user registerd with id: ${id}`);
     })
     .catch(error => {
-      console.log(error.message);
+      res.status(500).json(error);
     });
 });
 
 router.post("/login", validateRequestFullBody, validateUsername, (req, res) => {
-  let { username, password } = req.body;
+  const { username, password } = req.body;
   Users.login({ username })
     .first()
     .then(user => {
@@ -36,7 +36,7 @@ router.post("/login", validateRequestFullBody, validateUsername, (req, res) => {
       }
     })
     .catch(error => {
-      console.log(error.message);
+      res.status(500).json(error);
     });
 });
 
