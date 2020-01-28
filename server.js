@@ -14,7 +14,7 @@ server.get("/", (req, res) => {
     res.json("welcome back");
   } else {
     req.session.seenBefore = true;
-    res.json("nice to meed you! here is a cookie");
+    res.json("nice to meet you! here is a cookie");
   }
 });
 

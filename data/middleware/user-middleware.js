@@ -2,7 +2,12 @@ const express = require("express");
 const Users = require("../models/users");
 const bcrypt = require("bcryptjs");
 
-module.exports = { validateRequestFullBody, validateUsername, protectedRoute };
+module.exports = {
+  validateRequestFullBody,
+  validateUsername,
+  userProtectedRoute,
+  adminProtectedRoute
+};
 
 function validateRequestFullBody(req, res, next) {
   if (req.body.username && req.body.password) {
@@ -31,23 +36,22 @@ function validateUsername(req, res, next) {
     });
 }
 
-function protectedRoute(req, res, next) {
-  const { username, password } = req.headers;
-
-  if (username && password) {
-    Users.login({ username })
-      .first()
-      .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-          next();
-        } else {
-          res.status(401).json({ message: "Invalid Credentials" });
-        }
-      })
-      .catch(error => {
-        res.status(500).json({ message: "Ran into an unexpected error" });
-      });
+function userProtectedRoute(req, res, next) {
+  if (req.session.loggedInUser) {
+    next();
   } else {
-    res.status(400).json({ message: "No credentials provided" });
+    res.status(400).json({
+      message: "no cookie, OR cookie without a valid session id in the monkey"
+    });
+  }
+}
+
+function adminProtectedRoute(req, res, next) {
+  if (req.session.loggedAsAdmin) {
+    next();
+  } else {
+    res.status(400).json({
+      message: "no cookie, OR cookie without a valid session id in the monkey"
+    });
   }
 }

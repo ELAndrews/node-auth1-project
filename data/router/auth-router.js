@@ -30,7 +30,14 @@ router.post("/login", validateRequestFullBody, validateUsername, (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        res.status(200).json(`Logged in! Welcome back ${user.username}`);
+        if (user.username === "admin") {
+          req.session.loggedInUser = user;
+          req.session.loggedAsAdmin = user;
+          res.status(200).json(`Logged in! Welcome back Emma`);
+        } else {
+          req.session.loggedInUser = user;
+          res.status(200).json(`Logged in! Welcome back ${user.username}`);
+        }
       } else {
         res.status(401).json(`You shall not pass!`);
       }

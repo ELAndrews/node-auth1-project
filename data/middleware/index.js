@@ -3,6 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 
 module.exports = server => {
   server.use(helmet());
@@ -19,7 +20,14 @@ module.exports = server => {
         httpOnly: false
       },
       resave: false,
-      saveUninitialized: false
+      saveUninitialized: false,
+      store: new KnexSessionStore({
+        knex: require("../dbConfig"),
+        tablename: "sessions",
+        sidfieldname: "sid",
+        createtable: true,
+        clearInterval: 1000 * 60 * 60
+      })
     })
   );
 };
